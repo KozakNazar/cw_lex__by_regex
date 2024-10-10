@@ -250,7 +250,7 @@ size_t loadSource(char ** text, char * fileName){
 	fseek(file, 0, SEEK_END);
 	long fileSize = ftell(file);
 	if (fileSize > MAX_TEXT_SIZE) {
-		printf("the file(%d bytes) is larger than %d bytes\r\n", fileSize, MAX_TEXT_SIZE);
+		printf("the file(%ld bytes) is larger than %d bytes\r\n", fileSize, MAX_TEXT_SIZE);
 		fclose(file);
 		return 0;
 	}
