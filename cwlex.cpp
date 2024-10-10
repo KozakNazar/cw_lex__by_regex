@@ -136,10 +136,10 @@ unsigned int tryToGetIdentifier(struct LexemInfo* lexemInfoInTable, char(*identi
 unsigned int tryToGetUnsignedValue(struct LexemInfo* lexemInfoInTable) {
 	char unsignedvalues_re[] = "0|[1-9][0-9]*";
 
-	if (std::regex_match(std::string(lexemInfoInTable->lexemStr), std::regex(unsignedvalues_re))) { // 
+	if (std::regex_match(std::string(lexemInfoInTable->lexemStr), std::regex(unsignedvalues_re))) {
 		lexemInfoInTable->ifvalue = atoi(lastLexemInfoInTable->lexemStr);
-		lexemInfoInTable->lexemId = MAX_VARIABLES_COUNT + MAX_KEYWORD_COUNT; // ???
-		lexemInfoInTable->tokenType = VALUE_LEXEME_TYPE; // ???
+		lexemInfoInTable->lexemId = MAX_VARIABLES_COUNT + MAX_KEYWORD_COUNT;
+		lexemInfoInTable->tokenType = VALUE_LEXEME_TYPE;
 		return SUCCESS_STATE;
 	}
 
@@ -248,12 +248,14 @@ size_t loadSource(char ** text, char * fileName){
 	}
 
 	fseek(file, 0, SEEK_END);
-	long fileSize = ftell(file);
-	if (fileSize > MAX_TEXT_SIZE) {
-		printf("the file(%ld bytes) is larger than %d bytes\r\n", fileSize, MAX_TEXT_SIZE);
+	long fileSize_ = ftell(file);
+	if (fileSize_ >= MAX_TEXT_SIZE) {
+		printf("the file(%ld bytes) is larger than %d bytes\r\n", fileSize_, MAX_TEXT_SIZE);
 		fclose(file);
-		return 0;
+		exit(2); // TODO: ...
+		//return 0;
 	}
+	size_t fileSize = fileSize_;
 	rewind(file);
 
 	if (!text) {
@@ -264,14 +266,16 @@ size_t loadSource(char ** text, char * fileName){
 	if (*text == NULL) { 
 		fputs("Memory error", stderr); 
 		fclose(file);
-		//exit(2); // TODO: ...
-		return 0;
+		exit(2); // TODO: ...
+		//return 0;
 	}
 
 	size_t result = fread(*text, sizeof(char), fileSize, file);
 	if (result != fileSize) {
 		fputs("Reading error", stderr);
+		fclose(file);
 		exit(3); // TODO: ...
+		//return 0;
 	}
 	(*text)[fileSize] = '\0';
 
@@ -335,19 +339,12 @@ struct LexemInfo lexicalAnalyze(struct LexemInfo* lexemInfoInPtr, char(*identifi
 }
 
 struct LexemInfo tokenize(char* text, struct LexemInfo** lastLexemInfoInTable, char(*identifierIdsTable)[MAX_LEXEM_SIZE], struct LexemInfo(*lexicalAnalyzeFunctionPtr)(struct LexemInfo*, char(*)[MAX_LEXEM_SIZE])) {
+	char tokens_re[] = ";|<<|\\+\\+|--|\\*\\*|==|!=|:|[_0-9A-Za-z]+|[^ \t\n\r\f\v]";
+	std::regex tokens_re_(tokens_re);
 	struct LexemInfo ifBadLexemeInfo = { 0 };
-	std::regex token_re(
-		";|<<|\\+\\+|--|\\*\\*|==|!=|:" // (1)
-		"|"
-		"0|[1-9][0-9]+"                 // (2)
-		"|"
-		"[_A-Za-z]+"                    // (3)
-		"|"
-		"[^ \t\n\r\f\v]"                // others
-		);
 	std::string stringText(text);
 
-	for (std::sregex_token_iterator end, tokenIterator(stringText.begin(), stringText.end(), token_re); tokenIterator != end; ++tokenIterator, ++(*lastLexemInfoInTable)) {
+	for (std::sregex_token_iterator end, tokenIterator(stringText.begin(), stringText.end(), tokens_re_); tokenIterator != end; ++tokenIterator, ++(*lastLexemInfoInTable)) {
 		std::string str = *tokenIterator;
 		strncpy((*lastLexemInfoInTable)->lexemStr, str.c_str(), MAX_LEXEM_SIZE);
 		if ((ifBadLexemeInfo = (*lexicalAnalyzeFunctionPtr)(*lastLexemInfoInTable, identifierIdsTable)).tokenType == UNEXPEXTED_LEXEME_TYPE) {
