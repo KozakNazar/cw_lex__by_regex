@@ -146,10 +146,10 @@ unsigned int tryToGetUnsignedValue(struct LexemInfo* lexemInfoInTable) {
 	return ~SUCCESS_STATE;
 }
 
-int commentRemover(char * text = (char*)"", const char * openStrSpc = "//", const char * closeStrSpc = "\r\n"){
+int commentRemover(char * text = (char*)"", const char * openStrSpc = "//", const char * closeStrSpc = "\n"){
 	bool eofAlternativeCloseStrSpcType = false;
 	bool explicitCloseStrSpc = true;
-	if (!strcmp(closeStrSpc, "\r\n")) {
+	if (!strcmp(closeStrSpc, "\n")) {
 		eofAlternativeCloseStrSpcType = true;
 		explicitCloseStrSpc = false;
 	}
