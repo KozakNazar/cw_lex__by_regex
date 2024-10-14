@@ -277,7 +277,7 @@ size_t loadSource(char ** text, char * fileName){
 		exit(3); // TODO: ...
 		//return 0;
 	}
-	(*text)[fileSize] = '\0';
+	(*text)[fileSize - 1] = '\0';
 
 	fclose(file);
 	
@@ -287,8 +287,9 @@ size_t loadSource(char ** text, char * fileName){
 // try to get KeyWord
 char tryToGetKeyWord(struct LexemInfo* lexemInfoInTable) {
 	char keywords_re[] = ";|<<|\\+\\+|--|\\*\\*|==|!=|:|name|data|body|end|get|put|if|goto|div|mod|le|ge|not|and|or|long|int";
-	char keywords_[] =           ";|<<|++|--|**|==|!=|:|name|data|body|end|get|put|if|goto|div|mod|le|ge|not|and|or|long|int";
-		
+	char keywords_[sizeof(keywords_re)] = {'\0'};
+	for (char * keywords_re_ = keywords_re, *keywords__ = keywords_; (*keywords_re_ != '\0') ? 1: (*keywords__ = '\0', 0); (*keywords_re_ != '\\' || (keywords_re_[1] != '+' && keywords_re_[1] != '*' && keywords_re_[1] != '|')) ? *keywords__++ = *keywords_re_ : 0, ++keywords_re_);
+	
 	if (std::regex_match(std::string(lexemInfoInTable->lexemStr), std::regex(keywords_re))){
 		lexemInfoInTable->lexemId = MAX_VARIABLES_COUNT +
 		strstr(keywords_, lexemInfoInTable->lexemStr) - keywords_;
