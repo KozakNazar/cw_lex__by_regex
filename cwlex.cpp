@@ -277,7 +277,7 @@ size_t loadSource(char ** text, char * fileName){
 		exit(3); // TODO: ...
 		//return 0;
 	}
-	(*text)[fileSize - 1] = '\0';
+	(*text)[fileSize] = '\0';
 
 	fclose(file);
 	
