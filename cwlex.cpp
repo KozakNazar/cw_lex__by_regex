@@ -355,7 +355,7 @@ struct LexemInfo lexicalAnalyze(struct LexemInfo* lexemInfoInPtr, char(*identifi
 }
 
 struct LexemInfo tokenize(char* text, struct LexemInfo** lastLexemInfoInTable, char(*identifierIdsTable)[MAX_LEXEM_SIZE], struct LexemInfo(*lexicalAnalyzeFunctionPtr)(struct LexemInfo*, char(*)[MAX_LEXEM_SIZE])) {
-	char tokens_re[] = ";|<<|\\+\\+|--|\\*\\*|==|!=|:|[_0-9A-Za-z]+|[^ \t\n\r\f\v]";
+	char tokens_re[] = "<<|\\+\\+|--|\\*\\*|==|!=|[_0-9A-Za-z]+|[^ \t\r\f\v\n]";
 	std::regex tokens_re_(tokens_re);
 	struct LexemInfo ifBadLexemeInfo = { 0 };
 	std::string stringText(text);
