@@ -297,7 +297,7 @@ unsigned int getKeyWordId(char* keywords_, char* lexemStr, unsigned int baseId) 
 		return ~0;
 	}
 
-	return baseId + strstr(keywords_, lexemStr) - keywords_;
+	return strstr(keywords_, lexemStr) - keywords_ + baseId;
 }
 
 // try to get KeyWord
