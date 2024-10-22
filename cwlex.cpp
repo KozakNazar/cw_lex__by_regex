@@ -284,15 +284,30 @@ size_t loadSource(char ** text, char * fileName){
 	return fileSize;
 }
 
+void prepareKeyWordIdGetter(char* keywords_, char* keywords_re) {
+	if (keywords_ == NULL || keywords_re == NULL) {
+		return;
+	}
+
+	for (char* keywords_re_ = keywords_re, *keywords__ = keywords_; (*keywords_re_ != '\0') ? 1 : (*keywords__ = '\0', 0); (*keywords_re_ != '\\' || (keywords_re_[1] != '+' && keywords_re_[1] != '*' && keywords_re_[1] != '|')) ? *keywords__++ = *keywords_re_ : 0, ++keywords_re_);
+}
+
+unsigned int getKeyWordId(char* keywords_, char* lexemStr, unsigned int baseId) {
+	if (keywords_ == NULL || lexemStr == NULL) {
+		return ~0;
+	}
+
+	return baseId + strstr(keywords_, lexemStr) - keywords_;
+}
+
 // try to get KeyWord
 char tryToGetKeyWord(struct LexemInfo* lexemInfoInTable) {
 	char keywords_re[] = ";|<<|\\+\\+|--|\\*\\*|==|!=|:|name|data|body|end|get|put|if|goto|div|mod|le|ge|not|and|or|long|int";
 	char keywords_[sizeof(keywords_re)] = {'\0'};
-	for (char * keywords_re_ = keywords_re, *keywords__ = keywords_; (*keywords_re_ != '\0') ? 1: (*keywords__ = '\0', 0); (*keywords_re_ != '\\' || (keywords_re_[1] != '+' && keywords_re_[1] != '*' && keywords_re_[1] != '|')) ? *keywords__++ = *keywords_re_ : 0, ++keywords_re_);
+	prepareKeyWordIdGetter(keywords_, keywords_re);
 	
 	if (std::regex_match(std::string(lexemInfoInTable->lexemStr), std::regex(keywords_re))){
-		lexemInfoInTable->lexemId = MAX_VARIABLES_COUNT +
-		strstr(keywords_, lexemInfoInTable->lexemStr) - keywords_;
+		lexemInfoInTable->lexemId = getKeyWordId(keywords_, lexemInfoInTable->lexemStr, MAX_VARIABLES_COUNT);
 		lexemInfoInTable->tokenType = KEYWORD_LEXEME_TYPE;
 		return SUCCESS_STATE;
 	}
