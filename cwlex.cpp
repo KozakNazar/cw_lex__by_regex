@@ -70,7 +70,7 @@
 	"    put RV; #*printf(\"%d\", resultValue); *#\r\n" \
 	"end" \
 
-unsigned int mode;
+unsigned int mode = 0;
 char parameters[PARAMETERS_COUNT][MAX_PARAMETERS_SIZE] = { "" };
 
 struct LexemInfo{
