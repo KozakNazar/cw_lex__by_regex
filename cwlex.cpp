@@ -296,8 +296,15 @@ unsigned int getKeyWordId(char* keywords_, char* lexemStr, unsigned int baseId) 
 	if (keywords_ == NULL || lexemStr == NULL) {
 		return ~0;
 	}
+	char* lexemInKeywords_ = keywords_;
+	size_t lexemStrLen = strlen(lexemStr);
+	if (!lexemStrLen) {
+		return ~0;
+	}
 
-	return strstr(keywords_, lexemStr) - keywords_ + baseId;
+	for (; lexemInKeywords_ = strstr(lexemInKeywords_, lexemStr), lexemInKeywords_ != NULL && lexemInKeywords_[lexemStrLen] != '|' && lexemInKeywords_[lexemStrLen] != '\0'; ++lexemInKeywords_);
+
+	return lexemInKeywords_ - keywords_ + baseId;
 }
 
 // try to get KeyWord
